@@ -43,7 +43,7 @@ class RegisterState extends State<Register> {
             TextFormField(
               decoration: InputDecoration(
                   labelText: "User Id",
-                  hintText: "User Id ต้องมีความยาวอยู่ในช่วง 6-12 ตัวอักษร",
+                  hintText: "User Id must be between 6 to 12",
                   icon: Icon(Icons.person, size: 40)),
               controller: userid,
               keyboardType: TextInputType.text,

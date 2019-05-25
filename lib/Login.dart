@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'Database.dart';
+import 'SharedPreferences.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -16,7 +18,11 @@ class LoginState extends State<Login> {
   final userid = TextEditingController();
   final password = TextEditingController();
 
+  RegisterProvider user = RegisterProvider();
+
   int loginState = 0;
+
+  bool loginCheck = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +73,38 @@ class LoginState extends State<Login> {
               color: Colors.yellow[300],
               onPressed: () async{
                 _loginkey.currentState.validate();
+
+                await user.open("user.db");
+
+                Future<List<User>> allUser = user.getAllUser();
+
+                if (loginState != 2){
+                   Scaffold.of(context)
+                    .showSnackBar(SnackBar(content: Text('Please fill out this form')));
+                    this.loginState = 0;
+                }
+                else {
+                  this.loginState = 0;
+                  var userList = await allUser;
+                  for (var i=0; i< userList.length; i++) {
+                    if (userid.text == userList[i].username && password.text == userList[i].password) {
+                      this.loginCheck = true;
+                      SharePreference.id = userList[i].id;
+                      SharePreference.setAttr(userList[i]);
+                      print('User Valid');
+                      break;
+                    }
+                  }
+
+                  if(!loginCheck){
+                    Scaffold.of(context)
+                    .showSnackBar(SnackBar(content: Text('Invalid user or password')));
+                  }
+                  else {
+                    Navigator.pushReplacementNamed(context, '/home');
+                  }
+                }
+                
               },
             ),
             FlatButton(
